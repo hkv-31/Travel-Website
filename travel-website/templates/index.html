@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Travel Website</h1>
+    </header>
+    <section id="destinations">
+        <h2>Featured Destinations</h2>
+        <ul id="destinations-list"></ul>
+    </section>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+<form id="destinationForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="description" placeholder="Description" required>
+    <input type="text" id="location" placeholder="Location" required>
+    <button type="submit">Add Destination</button>
+</form>
+
+<script>
+    document.getElementById("destinationForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // Prevents page reload
+
+        const destinationData = {
+            name: document.getElementById("name").value,
+            description: document.getElementById("description").value,
+            location: document.getElementById("location").value
+        };
+
+        fetch("/api/destination", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(destinationData)
+        })
+        .then(response => response.json())
+        .then(data => alert(data.message))
+        .catch(error => console.error("Error:", error));
+    });
+</script>
+
+</html>
