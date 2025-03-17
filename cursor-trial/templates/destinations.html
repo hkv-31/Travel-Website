@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Destinations - TravelDiary{% endblock %}
+
+{% block extra_css %}
+<style>
+    .destination-card {
+        transition: transform 0.2s;
+        margin-bottom: 2rem;
+        height: 100%;
+    }
+    .destination-card:hover {
+        transform: translateY(-5px);
+    }
+    .destination-image {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .destination-description {
+        color: #666;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .card-footer {
+        background-color: transparent;
+        border-top: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Popular Destinations</h1>
+    </div>
+</div>
+
+<div class="row">
+    {% for destination in destinations %}
+    <div class="col-md-4">
+        <div class="card destination-card">
+            <img src="{{ destination.image_url }}" class="destination-image" alt="{{ destination.name }}">
+            <div class="card-body">
+                <h3 class="card-title">{{ destination.name }}</h3>
+                <p class="destination-description">{{ destination.description }}</p>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-primary">
+                        Explore {{ destination.name }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not destinations %}
+<div class="text-center">
+    <p class="lead">No destinations available yet.</p>
+</div>
+{% endif %}
+{% endblock %} 
