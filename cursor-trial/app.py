@@ -89,20 +89,39 @@ def register():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        
+
+        if not validate_registration(username, email, password):
+            return redirect(url_for('register'))
+
         if User.query.filter_by(username=username).first():
             flash('Username already exists', 'error')
             return redirect(url_for('register'))
-            
-        user = User(username=username, email=email)
-        user.password_hash = generate_password_hash(password)
-        
+
+        user = User(username=username, email=email, password_hash=generate_password_hash(password))
         db.session.add(user)
         db.session.commit()
-        
+
         flash('Registration successful!', 'success')
         return redirect(url_for('login'))
+
     return render_template('auth.html')
+
+#REGULAR EXPRESSIONS
+def validate_registration(username, email, password):
+    username_pattern = r"^[a-zA-Z0-9_-]{6,16}$"
+    email_pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    password_pattern = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,32}$"
+
+    if not re.match(username_pattern, username):
+        flash("Invalid username! Must be 6-16 characters with only letters, numbers, _, or -.", "error")
+        return False
+    if not re.match(email_pattern, email):
+        flash("Invalid email format!", "error")
+        return False
+    if not re.match(password_pattern, password):
+        flash("Password must be 8-32 characters and include letters and numbers.", "error")
+        return False
+    return True
 
 @app.route('/logout')
 @login_required
@@ -198,7 +217,12 @@ def delete_journal_entry(entry_id):
         return redirect(url_for('journal'))
     
     db.session.delete(entry)
-    db.session.commit()
+    #SQLAlchemyError
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+    flash("Database error! Please try again later.", "error")
     
     flash('Journal entry deleted successfully!', 'success')
     return redirect(url_for('journal'))
