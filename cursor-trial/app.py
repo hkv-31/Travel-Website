@@ -137,20 +137,31 @@ def journal():
     entries = JournalEntry.query.filter_by(user_id=current_user.id).order_by(JournalEntry.date.desc()).all()
     return render_template('journal.html', entries=entries)
 
+#Add Journal entry with ValueError handling 
 @app.route('/add_journal_entry', methods=['POST'])
 @login_required
 def add_journal_entry():
-    date = datetime.strptime(request.form.get('date'), '%Y-%m-%d').date()
-    title = request.form.get('title')
-    content = request.form.get('content')
+    try:
+        date_str = request.form.get('date')
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        if not date_str or not title or not content:
+            raise ValueError("All fields are required.")
+        
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
     
-    entry = JournalEntry(date=date, title=title, content=content, user_id=current_user.id)
-    db.session.add(entry)
-    db.session.commit()
+        entry = JournalEntry(date=date, title=title, content=content, user_id=current_user.id)
+        db.session.add(entry)
+        db.session.commit()
     
-    flash('Journal entry added successfully!', 'success')
+        flash('Journal entry added successfully!', 'success')
+        
+    except ValueError as e:
+        flash(f'Error: {str(e)}', 'error')
     return redirect(url_for('journal'))
 
+#Edit Journal entry with ValueError handling
 @app.route('/edit_journal_entry/<int:entry_id>', methods=['POST'])
 @login_required
 def edit_journal_entry(entry_id):
@@ -159,12 +170,23 @@ def edit_journal_entry(entry_id):
         flash('You do not have permission to edit this entry.', 'error')
         return redirect(url_for('journal'))
     
-    entry.date = datetime.strptime(request.form.get('date'), '%Y-%m-%d').date()
-    entry.title = request.form.get('title')
-    entry.content = request.form.get('content')
-    db.session.commit()
+    try:
+        date_str = request.form.get('date')
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        if not date_str or not title or not content:
+            raise ValueError("All fields are required.")
     
-    flash('Journal entry updated successfully!', 'success')
+        entry.date = datetime.strptime(request.form.get('date'), '%Y-%m-%d').date()
+        entry.title = request.form.get('title')
+        entry.content = request.form.get('content')
+        db.session.commit()
+        
+        flash('Journal entry updated successfully!', 'success')
+    except ValueError as e:
+        flash(f'Error: {str(e)}', 'error')
+    
     return redirect(url_for('journal'))
 
 @app.route('/delete_journal_entry/<int:entry_id>', methods=['POST'])
@@ -233,6 +255,14 @@ def delete_bucket_list_item(item_id):
     flash('Bucket list item deleted successfully!', 'success')
     return redirect(url_for('bucketlist'))
 
+#TemplateNotFound error handling 
+@app.route('/blog')
+def custom_page():
+    try:
+        return render_template('blog.html')  
+    except TemplateNotFound:
+        return "This file does not exist. Trying going back to home page.", 200  
+        
 # Initialize database with some destinations
 def init_db():
     with app.app_context():
