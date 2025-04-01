@@ -50,15 +50,15 @@
                 <form method="POST" action="{{ url_for('add_journal_entry') }}">
                     <div class="mb-3">
                         <label for="entryDate" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="entryDate" name="date" required>
+                        <input type="date" class="form-control" id="entryDate" name="date">
                     </div>
                     <div class="mb-3">
                         <label for="entryTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="entryTitle" name="title" required>
+                        <input type="text" class="form-control" id="entryTitle" name="title">
                     </div>
                     <div class="mb-3">
                         <label for="entryContent" class="form-label">Entry</label>
-                        <textarea class="form-control" id="entryContent" name="content" rows="5" required></textarea>
+                        <textarea class="form-control" id="entryContent" name="content" rows="5"></textarea>
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-outline-secondary me-2" id="cancelEntry">Cancel</button>
