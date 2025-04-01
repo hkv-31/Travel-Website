@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Bucket List - TravelDiary{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bucket-list-item {
+        transition: transform 0.2s;
+    }
+    .bucket-list-item:hover {
+        transform: translateY(-3px);
+    }
+    .item-actions {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .bucket-list-item:hover .item-actions {
+        opacity: 1;
+    }
+    .completed {
+        background-color: #f8f9fa;
+    }
+    .completed .card-title {
+        text-decoration: line-through;
+        color: #6c757d;
+    }
+    .new-item-form {
+        display: none;
+    }
+    .new-item-form.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Travel Bucket List</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-primary" id="newItemBtn">
+            <i class="bi bi-plus-circle"></i> Add New Item
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4 new-item-form" id="newItemForm">
+            <div class="card-body">
+                <h3 class="card-title mb-4">New Bucket List Item</h3>
+                <form method="POST" action="{{ url_for('add_bucket_list_item') }}">
+                    <div class="mb-3">
+                        <label for="itemTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="itemTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="itemDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="itemDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-outline-secondary me-2" id="cancelItem">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Pending Adventures</h3>
+        {% for item in items if not item.completed %}
+        <div class="card mb-3 bucket-list-item">
+            <div class="card-body">
+                <h5 class="card-title">{{ item.title }}</h5>
+                {% if item.description %}
+                <p class="card-text">{{ item.description }}</p>
+                {% endif %}
+                <div class="item-actions text-end">
+                    <form method="POST" action="{{ url_for('update_bucket_list_item', item_id=item.id) }}" class="d-inline">
+                        <input type="hidden" name="completed" value="true">
+                        <button type="button" class="btn btn-outline-primary btn-sm me-2 edit-item"
+                                data-item-id="{{ item.id }}"
+                                data-item-title="{{ item.title }}"
+                                data-item-description="{{ item.description }}">
+                            Edit
+                        </button>
+                        <button type="submit" class="btn btn-outline-success btn-sm me-2">Complete</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                formaction="{{ url_for('delete_bucket_list_item', item_id=item.id) }}">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-6">
+        <h3>Completed Adventures</h3>
+        {% for item in items if item.completed %}
+        <div class="card mb-3 bucket-list-item completed">
+            <div class="card-body">
+                <h5 class="card-title">{{ item.title }}</h5>
+                {% if item.description %}
+                <p class="card-text">{{ item.description }}</p>
+                {% endif %}
+                <div class="item-actions text-end">
+                    <form method="POST" action="{{ url_for('update_bucket_list_item', item_id=item.id) }}" class="d-inline">
+                        <input type="hidden" name="completed" value="false">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm me-2">Unmark Complete</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                formaction="{{ url_for('delete_bucket_list_item', item_id=item.id) }}">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if not items %}
+<div class="text-center">
+    <p class="lead">Your bucket list is empty. Start adding your dream destinations!</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const newItemBtn = document.getElementById('newItemBtn');
+    const newItemForm = document.getElementById('newItemForm');
+    const cancelItem = document.getElementById('cancelItem');
+
+    newItemBtn.addEventListener('click', function() {
+        newItemForm.classList.add('active');
+        newItemBtn.style.display = 'none';
+    });
+
+    cancelItem.addEventListener('click', function() {
+        newItemForm.classList.remove('active');
+        newItemBtn.style.display = 'block';
+    });
+});
+</script>
+{% endblock %} 

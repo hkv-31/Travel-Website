@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to TravelDiary{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 text-center">
+        <h1 class="display-4 mb-4">Welcome to TravelDiary</h1>
+        <p class="lead mb-4">Your personal travel companion for documenting adventures and planning future journeys.</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Explore Destinations</h5>
+                        <p class="card-text">Discover amazing places across India, from the bustling streets of Mumbai to the serene lakes of Udaipur.</p><br>
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('destinations') }}" class="btn btn-primary">View Destinations</a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Explore</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Travel Journal</h5>
+                        <p class="card-text">Keep track of your travel memories and experiences in your personal travel journal.
+                            Capture every moment, relive your adventures, and create lasting memories.</p>
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('journal') }}" class="btn btn-primary">Write Journal</a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Write</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Travel Bucket List</h5>
+                        <p class="card-text">Create and manage your travel bucket list to plan your future adventures. 
+                            Stay inspired, organize your dream destinations, and make them a reality.</p>
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('bucketlist') }}" class="btn btn-primary">View Bucket List</a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Plan</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

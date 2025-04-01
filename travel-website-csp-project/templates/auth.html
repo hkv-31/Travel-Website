@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Login/Register - TravelDiary{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    .auth-toggle {
+        margin-bottom: 2rem;
+    }
+    .auth-toggle .btn {
+        width: 50%;
+        border-radius: 0;
+    }
+    .auth-toggle .btn:first-child {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+    .auth-toggle .btn:last-child {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+    .auth-form {
+        display: none;
+    }
+    .auth-form.active {
+        display: block;
+    }
+    .form-control:focus {
+        border-color: #ff9999;
+        box-shadow: 0 0 0 0.25rem rgba(255, 153, 153, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card">
+        <div class="card-body">
+            <div class="auth-toggle btn-group w-100">
+                <button class="btn btn-primary active" id="loginToggle">Login</button>
+                <button class="btn btn-outline-primary" id="registerToggle">Register</button>
+            </div>
+
+            <form class="auth-form active" id="loginForm" method="POST" action="{{ url_for('login') }}">
+                <h3 class="text-center mb-4">Welcome Back!</h3>
+                <div class="mb-3">
+                    <label for="loginUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="loginUsername" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+
+            <form class="auth-form" id="registerForm" method="POST" action="{{ url_for('register') }}">
+                <h3 class="text-center mb-4">Create Account</h3>
+                <div class="mb-3">
+                    <label for="registerUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="registerUsername" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="registerEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="registerEmail" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="registerPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="registerPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginToggle = document.getElementById('loginToggle');
+    const registerToggle = document.getElementById('registerToggle');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    loginToggle.addEventListener('click', function() {
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+        loginToggle.classList.add('btn-primary');
+        loginToggle.classList.remove('btn-outline-primary');
+        registerToggle.classList.remove('btn-primary');
+        registerToggle.classList.add('btn-outline-primary');
+    });
+
+    registerToggle.addEventListener('click', function() {
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+        registerToggle.classList.add('btn-primary');
+        registerToggle.classList.remove('btn-outline-primary');
+        loginToggle.classList.remove('btn-primary');
+        loginToggle.classList.add('btn-outline-primary');
+    });
+});
+</script>
+{% endblock %} 
