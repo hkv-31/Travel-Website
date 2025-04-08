@@ -180,27 +180,26 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    try:
-        if request.method == 'POST':
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password, method='sha256')
+        
+        user = User(username=username, password=hashed_password)
 
-            if User.get_user_by_username(username):
-                flash('Username already exists', 'error')
-                return redirect(url_for('register'))
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash("Registration successful", "success")
+            return redirect(url_for("auth.login"))
+        except IntegrityError:
+            db.session.rollback()
+            flash('Username already exists', 'error')
+        except Exception as e:
+            db.session.rollback()
+            flash('Database error occurred. Please try again later.', 'danger')
 
-            user = User(username, email, password)
-            user.save()
-            flash('Registration successful!', 'success')
-            return redirect(url_for('login'))
-
-    except ValueError:
-        flash("Invalid input format", "danger")
-    except SQLAlchemyError:
-        flash('Database error occurred. Please try again later.', 'danger')
-
-    return render_template('auth.html')
+    return render_template("register.html")
 
 @app.route('/logout')
 @login_required
